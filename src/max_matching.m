@@ -5,6 +5,7 @@ global V_min_set;
 global visited;
 global matched;
     matched(1,length(G_E))=0;
+    visited(1,length(G_E))=0;
     for i = V_min_set
         if(matched(i)==0)
             visited(1,:)=0;

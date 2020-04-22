@@ -1,9 +1,22 @@
+% 文件导入测试数据
+
+
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
 global visited;
 global matched;
 % 创建P G O
-G_V = [1,2,3,4,5,6,7];
+G_V_num = 7;
+G_O_num = 4;
+global G_E;
+G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
+% G_V_num = 7;
+% G_O_num = 4;
+% global G_E;
+% G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
+
+O = (G_V_num+1):1:(G_V_num+G_O_num);
+G_V = 1:1:G_V_num;
 V = [];
 V_adj =[];
 for i = G_V
@@ -11,9 +24,6 @@ for i = G_V
 end
 V = int64(V);
 % (1,3),(2,3),(3,4),(3,5),(5,6),(5,7),(6,7)
-global G_E;
-G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
-G_E = int64(G_E);
 temp = int64(0);
 for adj_e = G_E
     for i = 1:1:length(adj_e)
@@ -25,7 +35,6 @@ for adj_e = G_E
     temp =0;
 end
 % disp(G_E);
-O = [8,9,10,11];
 
 % 求G的最小顶点覆盖V_min_set
 % 算法复杂度为指数，用启发式函数搜索会更好
@@ -62,6 +71,7 @@ end
 
 % 计算V_min和G-V_min的最大匹配
 % S1：产生二分图
+E = G_E;
 for i=V_min_set
    for j=V_min_set
       G_E(i,j)=0; 
@@ -69,9 +79,24 @@ for i=V_min_set
 end
 % S2: 深度优先搜索计算最大匹配
 max_matching();
-% S3: 计算C
-C = setdiff(G_V,matched);
-% S4: 计算C*和O
+
+% 计算最终结果
+C = setdiff(setdiff(G_V,V_min_set),matched);
 f = int64((length(G_V)+length(O) - 1)/2);
 need_num = int64(2*(f-delta)+1-length(O));
-union(C(1:need_num),O)
+% 注意有可能根本就不需要冲突图里面的节点
+if(need_num<=0)
+    best_path = O(1:length(O)+need_num);
+else
+    best_path = union(C(1:need_num),O);
+end
+
+% 可视化 注意可视化只是求出了其中的一个(部分)解
+% 只求出部分解的原因是最大匹配不是唯一的
+mGraph = graph(E);
+mGraph = addnode(mGraph,length(O));
+h = plot(mGraph);
+h.NodeColor = 'black';
+highlight(h,V_min_set,'NodeColor','b');
+highlight(h,best_path,'NodeColor','r');
+title("红色表示最优路径");
