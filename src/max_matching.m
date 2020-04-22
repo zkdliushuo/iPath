@@ -19,7 +19,10 @@ global G_E;
 global visited;
 global matched;
     visited(index)=1;
+    disp(index);
+    disp(visited);
     neighbours = G_E(index,:);
+    disp(neighbors);
     for i = 1:1:length(neighbours)
         if(neighbours(i)==1)
             if(visited(i)==1)

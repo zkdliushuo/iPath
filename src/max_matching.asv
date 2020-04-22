@@ -4,18 +4,18 @@ global G_E;
 global V_min_set;
 global visited;
 global matched;
-matched(1,length(G_E))=0;
-for i = V_min_set
-    if(matched(i)==0)
-        visited(1,:)=0;
-        argument_path(i);
+    matched(1,length(G_E))=0;
+    visited(1,length(G_E))=0;
+    for i = V_min_set
+        if(matched(i)==0)
+            visited(1,:)=0;
+            argument_path(i);
+        end
     end
-end
 end
 
 function is_apath = argument_path(index)
 global G_E;
-global V_min_set;
 global visited;
 global matched;
     visited(index)=1;
@@ -32,14 +32,16 @@ global matched;
                 return;
             else
                 if(matched(i)~=index)
-                    
+                    visited(i) = 1;
+                    if(argument_path(matched(i)))
+                        matched(i)=index;
+                        matched(index)=i;
+                        is_apath = true;
+                        return;
+                    end
                 end
             end
         end
     end
-    if(matched(index)==0)
-        is_apath = false;
-    else
-        is_apath = true;
-    end
+    is_apath = false;
 end

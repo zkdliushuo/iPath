@@ -3,20 +3,28 @@
 
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
-global visited;
 global matched;
-% 创建P G O
-G_V_num = 7;
-G_O_num = 4;
 global G_E;
-G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
+global V_min_set;
+% 创建P G O
+% test1
 % G_V_num = 7;
 % G_O_num = 4;
-% global G_E;
+% G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
+% test2
+% G_V_num = 7;
+% G_O_num = 4;
 % G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
+% test3
+G_V_num = 8;
+G_O_num = 3;
+G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
+    0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
+    0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
+
 
 O = (G_V_num+1):1:(G_V_num+G_O_num);
-G_V = 1:1:G_V_num;
+G_V = 1:1:G_V_num; 
 V = [];
 V_adj =[];
 for i = G_V
@@ -49,7 +57,6 @@ for index=2:1:length(G_V)
 end
 delta = length(G_V);
 V_min = 2.^delta-1;
-global V_min_set;
 V_min_set = [];
 for i=resulta
     num =i;
@@ -78,12 +85,15 @@ for i=V_min_set
    end
 end
 % S2: 深度优先搜索计算最大匹配
+G_E
 max_matching();
 
 % 计算最终结果
-C = setdiff(setdiff(G_V,V_min_set),matched);
+V_min_set
+matched
+C = setdiff(setdiff(G_V,V_min_set),matched)
 f = int64((length(G_V)+length(O) - 1)/2);
-need_num = int64(2*(f-delta)+1-length(O));
+need_num = int64(2*(f-delta)+1-length(O))
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
     best_path = O(1:length(O)+need_num);
