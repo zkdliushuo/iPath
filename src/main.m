@@ -3,6 +3,7 @@
 
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
+clear all
 global matched;
 global G_E;
 global V_min_set;
@@ -85,15 +86,12 @@ for i=V_min_set
    end
 end
 % S2: 深度优先搜索计算最大匹配
-G_E
 max_matching();
 
 % 计算最终结果
-V_min_set
-matched
-C = setdiff(setdiff(G_V,V_min_set),matched)
+C = setdiff(setdiff(G_V,V_min_set),matched);
 f = int64((length(G_V)+length(O) - 1)/2);
-need_num = int64(2*(f-delta)+1-length(O))
+need_num = int64(2*(f-delta)+1-length(O));
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
     best_path = O(1:length(O)+need_num);
