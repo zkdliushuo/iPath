@@ -101,10 +101,40 @@ end
 
 % 可视化 注意可视化只是求出了其中的一个(部分)解
 % 只求出部分解的原因是最大匹配不是唯一的
+% ylist = 0:1:G_V_num+G_O_num-1;
+% xlist = round(rand(1,G_V_num+G_O_num)*(G_V_num+G_O_num));
 mGraph = graph(E);
-mGraph = addnode(mGraph,length(O));
+% mGraph = addnode(mGraph,length(O));
+mGraph = addnode(mGraph,length(O)+2);
+angle = 0:2*pi/(numnodes(mGraph)-2):2*pi;
+xlist = cos(angle+pi/2);
+ylist = sin(angle+pi/2);
+% mGraph = addnode(mGraph,{'S' 'Z'});
+% findnode(mGraph, "S")
+% mGraph = addedge(mGraph,repelem(numnodes(mGraph)-1,length(best_path)),best_path,repelem(1,length(best_path)));
+% mGraph = addedge(mGraph,repelem(numnodes(mGraph),length(best_path)),best_path,repelem(1,length(best_path)));
 h = plot(mGraph);
-h.NodeColor = 'black';
-highlight(h,V_min_set,'NodeColor','b');
-highlight(h,best_path,'NodeColor','r');
-title("红色表示最优路径");
+labelnode(h,[numnodes(mGraph)-1,numnodes(mGraph)],["S（源）","Z（目的）"]);
+h.XData =  [xlist(1:numel(xlist)-1),0,2];
+h.YData =  [ylist(1:numel(ylist)-1),0,0];
+h.NodeColor = 'k';
+h.LineStyle = '--';
+h.MarkerSize = 4;
+highlight(h,C,'NodeColor','b');
+highlight(h,union(best_path,[numnodes(mGraph)-1,numnodes(mGraph)]),'NodeColor','r');
+highlight(h,[numnodes(mGraph)-1,numnodes(mGraph)]);
+hold on
+Ax = repelem(0,numel(best_path));
+Ay = repelem(0,numel(best_path));
+Bx = xlist(best_path);
+By = ylist(best_path);
+Cx = repelem(2,numel(best_path));
+Cy = repelem(0,numel(best_path));
+X = [Ax;Bx];
+Y = [Ay;By];
+plot(X,Y,'g');
+hold on
+X = [Cx;Bx];
+Y = [Cy;By];
+plot(X,Y,'g');
+title(["红色顶点是选中的路径";"蓝色顶点是可替换的路径"]);
