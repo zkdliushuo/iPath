@@ -13,15 +13,15 @@ global V_min_set;
 % G_O_num = 4;
 % G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
 % test2
-% G_V_num = 7;
-% G_O_num = 4;
-% G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
+G_V_num = 7;
+G_O_num = 4;
+G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
 % test3
-G_V_num = 8;
-G_O_num = 3;
-G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
-    0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
-    0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
+% G_V_num = 8;
+% G_O_num = 3;
+% G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
+%     0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
+%     0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
 
 
 O = (G_V_num+1):1:(G_V_num+G_O_num);
@@ -115,7 +115,7 @@ ylist = sin(angle+pi/2);
 % mGraph = addedge(mGraph,repelem(numnodes(mGraph),length(best_path)),best_path,repelem(1,length(best_path)));
 h = plot(mGraph);
 labelnode(h,[numnodes(mGraph)-1,numnodes(mGraph)],["S£¨Ô´£©","Z£¨Ä¿µÄ£©"]);
-h.XData =  [xlist(1:numel(xlist)-1),0,2];
+h.XData =  [xlist(1:numel(xlist)-1),-2,2];
 h.YData =  [ylist(1:numel(ylist)-1),0,0];
 h.NodeColor = 'k';
 h.LineStyle = '--';
@@ -124,7 +124,7 @@ highlight(h,C,'NodeColor','b');
 highlight(h,union(best_path,[numnodes(mGraph)-1,numnodes(mGraph)]),'NodeColor','r');
 highlight(h,[numnodes(mGraph)-1,numnodes(mGraph)]);
 hold on
-Ax = repelem(0,numel(best_path));
+Ax = repelem(-2,numel(best_path));
 Ay = repelem(0,numel(best_path));
 Bx = xlist(best_path);
 By = ylist(best_path);
