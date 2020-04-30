@@ -3,7 +3,7 @@
 
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
-clear all
+clc;
 global matched;
 global G_E;
 global V_min_set;
@@ -92,6 +92,15 @@ max_matching();
 C = setdiff(setdiff(G_V,V_min_set),matched);
 f = int64((length(G_V)+length(O) - 1)/2);
 need_num = int64(2*(f-delta)+1-length(O));
+
+% 设置G_fault_num default = f 必须小于等于f 同时大于delta
+whole_G = union(G_V,O);
+other_than_delta = setdiff(whole_G,V_min_set);
+G_fault_num = f;
+G_fault_num = G_fault_num - delta;
+other_fault_set = other_than_delta(randperm(length(other_than_delta),G_fault_num));
+fault_set = union(V_min_set,other_fault_set);
+
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
     best_path = O(1:length(O)+need_num);
@@ -109,32 +118,49 @@ mGraph = addnode(mGraph,length(O)+2);
 angle = 0:2*pi/(numnodes(mGraph)-2):2*pi;
 xlist = cos(angle+pi/2);
 ylist = sin(angle+pi/2);
-% mGraph = addnode(mGraph,{'S' 'Z'});
-% findnode(mGraph, "S")
-% mGraph = addedge(mGraph,repelem(numnodes(mGraph)-1,length(best_path)),best_path,repelem(1,length(best_path)));
-% mGraph = addedge(mGraph,repelem(numnodes(mGraph),length(best_path)),best_path,repelem(1,length(best_path)));
-h = plot(mGraph);
-labelnode(h,[numnodes(mGraph)-1,numnodes(mGraph)],["S（源）","Z（目的）"]);
-h.XData =  [xlist(1:numel(xlist)-1),-2,2];
-h.YData =  [ylist(1:numel(ylist)-1),0,0];
-h.NodeColor = 'k';
-h.LineStyle = '--';
-h.MarkerSize = 4;
-highlight(h,C,'NodeColor','b');
-highlight(h,union(best_path,[numnodes(mGraph)-1,numnodes(mGraph)]),'NodeColor','r');
-highlight(h,[numnodes(mGraph)-1,numnodes(mGraph)]);
-hold on
-Ax = repelem(-2,numel(best_path));
-Ay = repelem(0,numel(best_path));
-Bx = xlist(best_path);
-By = ylist(best_path);
-Cx = repelem(2,numel(best_path));
-Cy = repelem(0,numel(best_path));
-X = [Ax;Bx];
-Y = [Ay;By];
-plot(X,Y,'g');
-hold on
-X = [Cx;Bx];
-Y = [Cy;By];
-plot(X,Y,'g');
-title(["红色顶点是选中的路径";"蓝色顶点是可替换的路径"]);
+
+% 设置G_fault_num default = f 必须小于等于f 同时大于delta
+whole_G = union(G_V,O);
+other_than_delta = setdiff(whole_G,V_min_set);
+G_fault_num = f;
+G_fault_num = G_fault_num - delta;
+other_fault_set = nchoosek(other_than_delta,G_fault_num);
+iter_num = size(other_fault_set,1);
+if(iter_num>100)
+    iter_num=100;
+end
+for i=1:1:iter_num
+    fault_set = union(V_min_set,other_fault_set(i,:));
+    
+    close all;
+    fig = figure(i);
+    h = plot(mGraph);
+    labelnode(h,[numnodes(mGraph)-1,numnodes(mGraph)],["S（源）","Z（目的）"]);
+    labelnode(h,fault_set,"故障");
+    h.XData =  [xlist(1:numel(xlist)-1),-2,2];
+    h.YData =  [ylist(1:numel(ylist)-1),0,0];
+    h.LineStyle = '--';
+    h.MarkerSize = 4;
+    % highlight(h,fault_set,'NodeColor','b');
+    highlight(h,union(best_path,[numnodes(mGraph)-1,numnodes(mGraph)]),'NodeColor','r');
+    highlight(h,[numnodes(mGraph)-1,numnodes(mGraph)]);
+    hold on
+    Ax = repelem(-2,numel(best_path));
+    Ay = repelem(0,numel(best_path));
+    Bx = xlist(best_path);
+    By = ylist(best_path);
+    Cx = repelem(2,numel(best_path));
+    Cy = repelem(0,numel(best_path));
+    X = [Ax;Bx];
+    Y = [Ay;By];
+    plot(X,Y,'g');
+    hold on
+    X = [Cx;Bx];
+    Y = [Cy;By];
+    plot(X,Y,'g');
+    title(["红色顶点是选中的路径";"蓝色顶点是可替换的路径"]);
+    frame = getframe(fig); % 获取frame
+    img = frame2im(frame); % 将frame变换成imwrite函数可以识别的格式
+    imwrite(img,['result',num2str(i),'.png']); % 保存到工作目录下，名字为"a.png"
+end
+clear variables;
