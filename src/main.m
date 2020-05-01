@@ -4,6 +4,7 @@
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
 clc;
+clear all;
 global matched;
 global G_E;
 global V_min_set;
@@ -13,19 +14,20 @@ global V_min_set;
 % G_O_num = 4;
 % G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
 % test2
-G_V_num = 7;
-G_O_num = 4;
-G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
+% G_V_num = 7;
+% G_O_num = 4;
+% G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
 % test3
-% G_V_num = 8;
-% G_O_num = 3;
-% G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
-%     0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
-%     0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
+G_V_num = 8;
+G_O_num = 3;
+G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
+    0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
+    0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
 
 
 O = (G_V_num+1):1:(G_V_num+G_O_num);
 G_V = 1:1:G_V_num; 
+f = int64((length(G_V)+length(O) - 1)/2);
 V = [];
 V_adj =[];
 for i = G_V
@@ -90,16 +92,7 @@ max_matching();
 
 % 计算最终结果
 C = setdiff(setdiff(G_V,V_min_set),matched);
-f = int64((length(G_V)+length(O) - 1)/2);
 need_num = int64(2*(f-delta)+1-length(O));
-
-% 设置G_fault_num default = f 必须小于等于f 同时大于delta
-whole_G = union(G_V,O);
-other_than_delta = setdiff(whole_G,V_min_set);
-G_fault_num = f;
-G_fault_num = G_fault_num - delta;
-other_fault_set = other_than_delta(randperm(length(other_than_delta),G_fault_num));
-fault_set = union(V_min_set,other_fault_set);
 
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
@@ -119,11 +112,14 @@ angle = 0:2*pi/(numnodes(mGraph)-2):2*pi;
 xlist = cos(angle+pi/2);
 ylist = sin(angle+pi/2);
 
-% 设置G_fault_num default = f 必须小于等于f 同时大于delta
+
+% 打印图片
 whole_G = union(G_V,O);
 other_than_delta = setdiff(whole_G,V_min_set);
-G_fault_num = f;
+
+G_fault_num = f; % 设置G_fault_num default = f 必须小于等于f 同时大于delta
 G_fault_num = G_fault_num - delta;
+
 other_fault_set = nchoosek(other_than_delta,G_fault_num);
 iter_num = size(other_fault_set,1);
 if(iter_num>100)
@@ -163,4 +159,3 @@ for i=1:1:iter_num
     img = frame2im(frame); % 将frame变换成imwrite函数可以识别的格式
     imwrite(img,['result',num2str(i),'.png']); % 保存到工作目录下，名字为"a.png"
 end
-clear variables;
