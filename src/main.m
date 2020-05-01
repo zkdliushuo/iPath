@@ -118,6 +118,10 @@ whole_G = union(G_V,O);
 other_than_delta = setdiff(whole_G,V_min_set);
 
 G_fault_num = f; % 设置G_fault_num default = f 必须小于等于f 同时大于delta
+if(G_fault_num<delta || G_fault_num > f)
+    "error!"
+    return;
+end
 G_fault_num = G_fault_num - delta;
 
 other_fault_set = nchoosek(other_than_delta,G_fault_num);
