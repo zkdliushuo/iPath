@@ -4,6 +4,7 @@
 % 文件导入模块先不实现
 % 暂时用简单的初始数据代替
 clc;
+clear all;
 global matched;
 global G_E;
 global V_min_set;
@@ -13,15 +14,19 @@ global V_min_set;
 % G_O_num = 4;
 % G_E = [0,1,1,0,0,0,0;1,0,1,1,1,0,0;1,1,0,0,0,0,0;0,1,0,0,0,1,0;0,1,0,0,0,0,1;0,0,0,1,0,0,1;0,0,0,0,1,1,0];
 % test2
-G_V_num = 7;
-G_O_num = 4;
-G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
+% G_V_num = 7;
+% G_O_num = 4;
+% G_E = [0,0,1,0,0,0,0;0,0,1,0,0,0,0;1,1,0,1,1,0,0;0,0,1,0,0,0,0;0,0,1,0,0,1,1;0,0,0,0,1,0,1;0,0,0,0,1,1,0];
 % test3
 % G_V_num = 8;
 % G_O_num = 3;
 % G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
 %     0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
 %     0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
+% test4 none conflict
+G_V_num = 0;
+G_O_num = 4;
+G_E = [];
 
 
 O = (G_V_num+1):1:(G_V_num+G_O_num);
@@ -47,9 +52,9 @@ end
 
 % 求G的最小顶点覆盖V_min_set
 % 算法复杂度为指数，用启发式函数搜索会更好
-resulta = [V(1),V_adj(1)];
+resulta = [0,0];
 resultb = [];
-for index=2:1:length(G_V)
+for index=1:1:length(G_V)
    for i = 1:1:length(resulta)
        resultb = [resultb,bitor(resulta(i),V(index)),bitor(resulta(i),V_adj(index))];
    end
@@ -86,12 +91,14 @@ for i=V_min_set
    end
 end
 % S2: 深度优先搜索计算最大匹配
-max_matching();
+if(~isempty(G_E))
+    max_matching();
+end
 
 % 计算最终结果
-C = setdiff(setdiff(G_V,V_min_set),matched);
-f = int64((length(G_V)+length(O) - 1)/2);
-need_num = int64(2*(f-delta)+1-length(O));
+C = setdiff(setdiff(G_V,V_min_set),matched)
+f = floor((length(G_V)+length(O) - 1)/2)
+need_num = int64(2*(f-delta)+1-length(O))
 
 % 设置G_fault_num default = f 必须小于等于f 同时大于delta
 whole_G = union(G_V,O);
@@ -100,6 +107,7 @@ G_fault_num = f;
 G_fault_num = G_fault_num - delta;
 other_fault_set = other_than_delta(randperm(length(other_than_delta),G_fault_num));
 fault_set = union(V_min_set,other_fault_set);
+other_fault_set
 
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
@@ -116,8 +124,8 @@ mGraph = graph(E);
 % mGraph = addnode(mGraph,length(O));
 mGraph = addnode(mGraph,length(O)+2);
 angle = 0:2*pi/(numnodes(mGraph)-2):2*pi;
-xlist = cos(angle+pi/2);
-ylist = sin(angle+pi/2);
+xlist = cos(angle+pi/2-pi/(numnodes(mGraph)-2));
+ylist = sin(angle+pi/2-pi/(numnodes(mGraph)-2));
 
 % 设置G_fault_num default = f 必须小于等于f 同时大于delta
 whole_G = union(G_V,O);
@@ -163,4 +171,4 @@ for i=1:1:iter_num
     img = frame2im(frame); % 将frame变换成imwrite函数可以识别的格式
     imwrite(img,['result',num2str(i),'.png']); % 保存到工作目录下，名字为"a.png"
 end
-clear variables;
+clear variables
