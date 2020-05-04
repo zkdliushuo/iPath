@@ -7,7 +7,23 @@ clc;
 clear all;
 global matched;
 global G_E;
+global G_V;
 global V_min_set;
+
+% 输入overall_G_E
+overall_G_E = [0,1,0,0,0,0,0,1;1,0,0,0,1,0,0,0;0,0,0,0,0,0,0,1;...
+     0,0,0,0,0,0,0,0;0,1,0,0,0,0,0,1;0,0,0,0,0,0,0,0;...
+     0,0,0,0,0,0,0,1;1,0,1,0,1,0,1,0];
+G_V = [];
+O = [];
+for i=1:1:length(overall_G_E)
+    j = find(overall_G_E(i,:)==1);
+    if isempty(j)
+        O=[O,i];
+    else
+        G_V=[G_V,i];
+    end
+end
 % 创建P G O
 % test1
 % G_V_num = 7;
@@ -24,30 +40,27 @@ global V_min_set;
 %     0,1,1,0,0,1,0,0;0,1,0,0,0,1,0,0;0,1,0,1,1,0,1,1;...
 %     0,0,0,0,0,1,0,0;0,0,0,0,0,1,0,0];
 % test4 none conflict
-G_V_num = 0;
-G_O_num = 4;
-G_E = [];
+G_V_num = length(G_V);
+G_O_num = length(O);
+G_E = overall_G_E(G_V,G_V);
 
-
-O = (G_V_num+1):1:(G_V_num+G_O_num);
-G_V = 1:1:G_V_num; 
-f = int64((length(G_V)+length(O) - 1)/2);
+% O = (G_V_num+1):1:(G_V_num+G_O_num);
+% G_V = 1:1:G_V_num; 
+f = floor((G_V_num+G_O_num - 1)/2);
 V = [];
 V_adj =[];
 for i = G_V
-    V = [V,2.^(i-1)];
+    V = [V,2^(i-1)];
 end
-V = int64(V);
 % (1,3),(2,3),(3,4),(3,5),(5,6),(5,7),(6,7)
-temp = int64(0);
 for adj_e = G_E
+    temp = 0;
     for i = 1:1:length(adj_e)
         if(adj_e(i)==1)
             temp = bitor(temp,V(i));
         end
     end
     V_adj = [V_adj,temp];
-    temp =0;
 end
 % disp(G_E);
 
@@ -79,16 +92,15 @@ for i=resulta
 end
 for i=1:1:length(V)
     if(bitand(V_min,V(i)))
-       V_min_set = [V_min_set,i];
+       V_min_set = [V_min_set,G_V(i)];
     end
 end
-
 % 计算V_min和G-V_min的最大匹配
 % S1：产生二分图
 E = G_E;
 for i=V_min_set
    for j=V_min_set
-      G_E(i,j)=0; 
+      G_E(G_V==i,G_V==j)=0; 
    end
 end
 % S2: 深度优先搜索计算最大匹配
@@ -101,27 +113,19 @@ C = setdiff(setdiff(G_V,V_min_set),matched);
 f = floor((length(G_V)+length(O) - 1)/2);
 need_num = int64(2*(f-delta)+1-length(O));
 
-% 设置G_fault_num default = f 必须小于等于f 同时大于delta
-whole_G = union(G_V,O);
-other_than_delta = setdiff(whole_G,V_min_set);
-G_fault_num = f;
-G_fault_num = G_fault_num - delta;
-other_fault_set = other_than_delta(randperm(length(other_than_delta),G_fault_num));
-fault_set = union(V_min_set,other_fault_set);
 % 注意有可能根本就不需要冲突图里面的节点
 if(need_num<=0)
     best_path = O(1:length(O)+need_num);
 else
     best_path = union(C(1:need_num),O);
 end
-
 % 可视化 注意可视化只是求出了其中的一个(部分)解
 % 只求出部分解的原因是最大匹配不是唯一的
 % ylist = 0:1:G_V_num+G_O_num-1;
 % xlist = round(rand(1,G_V_num+G_O_num)*(G_V_num+G_O_num));
-mGraph = graph(E);
+mGraph = graph(overall_G_E);
 % mGraph = addnode(mGraph,length(O));
-mGraph = addnode(mGraph,length(O)+2);
+mGraph = addnode(mGraph,2);
 angle = 0:2*pi/(numnodes(mGraph)-2):2*pi;
 xlist = cos(angle+pi/2-pi/(numnodes(mGraph)-2));
 ylist = sin(angle+pi/2-pi/(numnodes(mGraph)-2));
