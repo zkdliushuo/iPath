@@ -2,6 +2,8 @@
 
 [TOC]
 
+使用typora打开
+
 ## 拜占庭容错通信
 
 ## 最优可靠径通信路径算法(iPath)
@@ -139,3 +141,13 @@ G_E = [0,1,1,0,0,0,0,0;1,0,1,1,1,1,0,0;1,1,0,1,0,0,0,0;...
 ​	[addNode](https://ww2.mathworks.cn/help/matlab/ref/graph.addnode.html)
 
 ​	
+
+### 显示故障点和保存图片
+
+​	**故障点集**(fault_set)中必然包括所有最小覆盖集中的顶点，同时最多不能达到所有顶点的一半。
+
+​	在程序中，我设置为每次取f个故障点，你可以在[这里](https://github.com/zkdliushuo/iPath/blob/master/src/main.m#L120)在合理区间修改故障点的数目。
+
+​	对于你指定的故障点数目，程序可以在最小覆盖集顶点之外，随机从整个图中选取更多顶点。并且由于使用了[nchoosek](https://github.com/zkdliushuo/iPath/blob/master/src/main.m#L127)函数，可以不重复地得到所有可能的情况。
+
+​	为了防止出现情况太多，存储图片太多的情况，你也可以指定最多保存多少图片。
